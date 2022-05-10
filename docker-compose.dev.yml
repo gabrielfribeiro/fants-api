@@ -1,0 +1,38 @@
+version: "3"
+networks:
+  fants:
+    external: true
+services:
+  app:
+    environment:
+      - NODE_ENV=development
+      - PORT=3333
+    container_name: "fants-api"
+    image: node:14.16
+    working_dir: /usr/src/app
+    restart: always
+    command: yarn start:dev
+    ports:
+      - "3333:3333"
+    volumes:
+      - ./:/usr/src/app
+    depends_on:
+      - postgres
+    networks:
+      - fants
+    links:
+      - postgres
+  postgres:
+    container_name: "fants-db"
+    image: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./.docker/db/postgres-dev:/data/db
+    environment:
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "root"
+      POSTGRES_DB: "fants-dev-db"
+    networks:
+      - fants
